@@ -1,5 +1,4 @@
-import express from "express";
-import { Request, Response, Router } from "express";
+import express, { Request, Response, Router } from "express";
 import { AccountsHandler } from "./accounts/accounts";
 import { EventsHandler } from "./events/events";
 
@@ -15,7 +14,7 @@ routes.get('/', (req: Request, res: Response) => {
 });
 
 // Rota de Login
-routes.post('/login', AccountsHandler.loginHandler);
+routes.get('/login', AccountsHandler.loginHandler);
 
 // Rota de Cadastro
 routes.post('/signUp', AccountsHandler.signUpHandler);
@@ -32,8 +31,24 @@ routes.put('/deleteEvent', EventsHandler.deleteEventHandler);
 // Rota para avaliar novo evento
 routes.put('/evaluateNewEvent', EventsHandler.evaluateNewEventHandler);
 
+// Rota para adicionar fundos
+routes.post('/addFunds', AccountsHandler.addFundsHandler);
+
+// Rota para sacar fundos
+routes.post('/withdrawFunds', AccountsHandler.withdrawFundsHandler);
+
+// Rota para apostar em evento
+routes.post('/betOnEvent', EventsHandler.betOnEventHandler);
+
+// Rota para encerrar evento
+routes.put('/finishEvent', EventsHandler.finishEventHandler);
+
+// Rota para buscar eventos
+routes.get('/searchEvent', EventsHandler.searchEventHandler);
+
 server.use(routes);
 
+// Start the server
 server.listen(port, () => {
     console.log(`Server is running on: ${port}`);
 });

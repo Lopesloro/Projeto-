@@ -1,3 +1,2 @@
 # Projeto Integrador
-
-Projeto integrador do segundo semestre
+Professora, tentamos criar contas em mais de 4 emails diferentes no oracle cloud e acabamos não conseguindo, então o codigo ainda esta sem banco de dados e vamos organizar isso o mais breve possivel

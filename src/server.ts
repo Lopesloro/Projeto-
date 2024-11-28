@@ -11,9 +11,9 @@ const port = 3000;
 const server = express();
 const routes = Router();
 
-// Configuração do CORS - deve vir antes das rotas
+// Configuração do CORS
 server.use(cors({
-    origin: 'http://127.0.0.1:5500', // URL do Live Server
+    origin: 'http://127.0.0.1:5500', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'email', 'password']
 }));

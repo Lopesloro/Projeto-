@@ -1,54 +1,59 @@
 import express, { Request, Response, Router } from "express";
 import { AccountsHandler } from "./accounts/accounts";
 import { EventsHandler } from "./events/events";
+import dotenv from 'dotenv';
+import cors from 'cors';
+import path from 'path';
+
+dotenv.config();
 
 const port = 3000;
 const server = express();
 const routes = Router();
 
-server.use(express.json()); 
+// Configuração do CORS - deve vir antes das rotas
+server.use(cors({
+    origin: 'http://127.0.0.1:5500', // URL do Live Server
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'email', 'password']
+}));
+
+server.use(express.json());
+
+// Servir arquivos estáticos do diretório public
+server.use(express.static('public'));
 
 // Define routes
+// Rota para a página inicial
 routes.get('/', (req: Request, res: Response) => {
-    res.status(403).send('Acesso não permitido.');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Rota para a página de autenticação
+routes.get('/auth', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth.html'));
 });
 
 // Rota de Login
-routes.get('/login', AccountsHandler.loginHandler);
+routes.post('/login', AccountsHandler.loginHandler);
 
 // Rota de Cadastro
 routes.post('/signUp', AccountsHandler.signUpHandler);
 
-// Rota de Eventos
+// Rotas
 routes.post('/addEvent', EventsHandler.addEventHandler);
-
-// Rota para obter eventos
 routes.get('/getEvents', EventsHandler.getEventsHandler);
-
-// Rota para deletar evento
 routes.put('/deleteEvent', EventsHandler.deleteEventHandler);
-
-// Rota para avaliar novo evento
 routes.put('/evaluateNewEvent', EventsHandler.evaluateNewEventHandler);
-
-// Rota para adicionar fundos
 routes.post('/addFunds', AccountsHandler.addFundsHandler);
-
-// Rota para sacar fundos
 routes.post('/withdrawFunds', AccountsHandler.withdrawFundsHandler);
-
-// Rota para apostar em evento
 routes.post('/betOnEvent', EventsHandler.betOnEventHandler);
-
-// Rota para encerrar evento
 routes.put('/finishEvent', EventsHandler.finishEventHandler);
-
-// Rota para buscar eventos
 routes.get('/searchEvent', EventsHandler.searchEventHandler);
 
 server.use(routes);
 
-// Start the server
+// Inicia o servidor
 server.listen(port, () => {
     console.log(`Server is running on: ${port}`);
 });

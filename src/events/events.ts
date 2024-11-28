@@ -139,8 +139,6 @@ export namespace EventsHandler {
                     [result, eventId]
                 );
 
-                
-
                 res.status(200).send("Evento encerrado com sucesso");
             } catch (err) {
                 res.status(500).send("Erro ao encerrar evento");

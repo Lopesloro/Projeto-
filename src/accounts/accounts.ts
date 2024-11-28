@@ -48,12 +48,15 @@ export namespace AccountsHandler {
 
     // função de login do site
     export const loginHandler: RequestHandler = async (req: Request, res: Response) => {
-        const pEmail = req.headers['email'] as string;
-        const pPassword = req.headers['password'] as string; 
-        if (pEmail && pPassword) {
+        const { email, password } = req.body; 
+        if (email && password) {
             try {
-                await login(pEmail, pPassword);
-                res.status(200).send("Login feito com sucesso");
+                const accounts = await login(email, password);
+                if (accounts && accounts.length > 0) {
+                    res.status(200).send("Login feito com sucesso");
+                } else {
+                    res.status(401).send("Credenciais inválidas");
+                }
             } catch (err) {
                 res.status(500).send("Erro ao fazer login");
             }
@@ -73,15 +76,27 @@ export namespace AccountsHandler {
                     password: process.env.ORACLE_PASSWORD,
                     connectString: process.env.ORACLE_CONN_STR
                 });
-
+    
                 await connection.execute(
                     'INSERT INTO ACCOUNTS (completeName, email, password) VALUES (:completeName, :email, :password)',
                     [completeName, email, password]
                 );
-
+                
+                // Adicionando o commit após o INSERT
+                await connection.commit();
+    
                 res.status(201).send("Usuário cadastrado com sucesso");
             } catch (err) {
-                res.status(500).send("Erro ao cadastrar usuário");
+                console.error('Erro ao cadastrar:', err); 
+                if (connection) {
+                    await connection.rollback(); 
+                }
+                
+                if (err instanceof Error && err.message.includes('ORA-00001')) {
+                    res.status(409).send("Email já cadastrado");
+                } else {
+                    res.status(500).send("Erro ao cadastrar usuário");
+                }
             } finally {
                 if (connection) {
                     await connection.close();

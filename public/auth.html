@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetNaHora - Login</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-red: #e31837;
+            --dark-red: #b31212;
+            --primary-black: #1a1a1a;
+            --secondary-black: #2d2d2d;
+        }
+
+        body {
+            background-color: var(--primary-black);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: var(--primary-red);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .auth-form {
+            background-color: var(--secondary-black);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-title {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cccccc;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: var(--primary-black);
+            color: white;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-red);
+            color: white;
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--dark-red);
+        }
+
+        .auth-link {
+            text-align: center;
+            color: #cccccc;
+        }
+
+        .auth-link a {
+            color: var(--primary-red);
+            text-decoration: none;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .message.error {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+        }
+
+        .message.success {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #44ff44;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">BetNaHora</a>
+    </nav>
+
+    <div class="auth-container">
+        <form id="authForm" class="auth-form">
+            <h2 class="auth-title" id="formTitle">Login</h2>
+            <div id="messageContainer"></div>
+            
+            <div class="form-group" id="nameGroup" style="display: none;">
+                <label for="completeName">Nome Completo</label>
+                <input type="text" id="completeName" name="completeName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">Entrar</button>
+            
+            <p class="auth-link" id="switchLink">
+                Não tem uma conta? <a href="#" onclick="toggleForm(event)">Cadastre-se</a>
+            </p>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const userEmail = sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail');
+    if (userEmail) {
+        window.location.href = '/index.html';
+    }
+});
+        const API_URL = 'http://localhost:3000';
+        let isLoginForm = true;
+
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+        }
+
+        function toggleForm(event) {
+            event.preventDefault();
+            isLoginForm = !isLoginForm;
+            const formTitle = document.getElementById('formTitle');
+            const submitBtn = document.getElementById('submitBtn');
+            const switchLink = document.getElementById('switchLink');
+            const nameGroup = document.getElementById('nameGroup');
+            const messageContainer = document.getElementById('messageContainer');
+
+            if (isLoginForm) {
+                formTitle.textContent = 'Login';
+                submitBtn.textContent = 'Entrar';
+                switchLink.innerHTML = 'Não tem uma conta? <a href="#" onclick="toggleForm(event)">Cadastre-se</a>';
+                nameGroup.style.display = 'none';
+            } else {
+                formTitle.textContent = 'Cadastro';
+                submitBtn.textContent = 'Cadastrar';
+                switchLink.innerHTML = 'Já tem uma conta? <a href="#" onclick="toggleForm(event)">Faça login</a>';
+                nameGroup.style.display = 'block';
+            }
+
+            messageContainer.innerHTML = '';
+            document.getElementById('authForm').reset();
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                if (isLoginForm) {
+                    // Login
+                    const response = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (response.ok) {
+                        // Store user info in sessionStorage
+                        sessionStorage.setItem('userEmail', email);
+                        showMessage('Login realizado com sucesso!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    } else {
+                        showMessage('Email ou senha inválidos', 'error');
+                    }
+                } else {
+                    // Cadastro
+                    const completeName = document.getElementById('completeName').value;
+                    const response = await fetch(`${API_URL}/signUp`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ completeName, email, password })
+                    });
+
+                    if (response.ok) {
+                        showMessage('Cadastro realizado com sucesso! Redirecionando para o login...', 'success');
+                        setTimeout(() => {
+                            isLoginForm = true;
+                            toggleForm({ preventDefault: () => {} });
+                        }, 2000);
+                    } else if (response.status === 409) {
+                        showMessage('Email já cadastrado', 'error');
+                    } else {
+                        showMessage('Erro ao realizar cadastro', 'error');
+                    }
+                }
+            } catch (error) {
+                showMessage(`Erro ao ${isLoginForm ? 'fazer login' : 'realizar cadastro'}`, 'error');
+            }
+        });
+
+        // Verificar se o usuário já está logado
+        window.addEventListener('DOMContentLoaded', () => {
+            const userEmail = sessionStorage.getItem('userEmail');
+            if (userEmail) {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>

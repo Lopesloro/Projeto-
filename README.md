@@ -1,2 +1,4 @@
 # Projeto Integrador
-Professora, tentamos criar contas em mais de 4 emails diferentes no oracle cloud e acabamos não conseguindo, então o codigo ainda esta sem banco de dados e vamos organizar isso o mais breve possivel
+Projeto Integrador do time 13
+
+Obs. Não conseguimos criar conta no oracle cloud então fizemos na vpn da puc
